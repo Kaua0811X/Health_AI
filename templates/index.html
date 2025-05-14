@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Triagem Médica IA</title>
+</head>
+<body>
+    <h1>Triagem Médica Inteligente</h1>
+    <form id="form">
+        Nome: <input type="text" id="nome"><br>
+        CPF: <input type="text" id="cpf"><br>
+        RG: <input type="text" id="rg"><br>
+        Sintomas: <textarea id="sintomas"></textarea><br>
+        <button type="submit">Enviar</button>
+    </form>
+    <pre id="resposta"></pre>
+
+    <script>
+        document.getElementById("form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const dados = {
+                nome: document.getElementById("nome").value,
+                cpf: document.getElementById("cpf").value,
+                rg: document.getElementById("rg").value,
+                sintomas: document.getElementById("sintomas").value
+            };
+
+            const res = await fetch("/api/triagem", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(dados)
+            });
+
+            const json = await res.json();
+            document.getElementById("resposta").textContent = JSON.stringify(json, null, 2);
+        });
+    </script>
+</body>
+</html>
