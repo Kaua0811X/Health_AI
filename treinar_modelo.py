@@ -9,7 +9,7 @@ df = pd.read_csv("dados/dataset_balanceado.csv")  # Ajuste o caminho se necessá
 
 # Ajuste as colunas de acordo com o seu dataset
 X = df["sintomas"]  # Sintomas
-y_doenca = df["doenca"]  # Doença
+y_doenca = df["disease"]  # Doença
 
 # Criar o vetor TF-IDF para os sintomas
 vetor = TfidfVectorizer(stop_words="english")
