@@ -1,40 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Triagem Médica IA</title>
+    <title>HealthAI - Triagem Inteligente</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .resultado {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e0f7fa;
+            border-left: 5px solid #00796b;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Triagem Médica Inteligente</h1>
-    <form id="form">
-        Nome: <input type="text" id="nome"><br>
-        CPF: <input type="text" id="cpf"><br>
-        RG: <input type="text" id="rg"><br>
-        Sintomas: <textarea id="sintomas"></textarea><br>
-        <button type="submit">Enviar</button>
-    </form>
-    <pre id="resposta"></pre>
+    <div class="container">
+        <h1>HealthAI - Triagem Médica</h1>
+        <form method="POST">
+            <label for="sintomas">Descreva seus sintomas:</label>
+            <textarea id="sintomas" name="sintomas" placeholder="Ex: dor de cabeça, fadiga, febre..."></textarea>
+            <button type="submit">Analisar</button>
+        </form>
 
-    <script>
-        document.getElementById("form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const dados = {
-                nome: document.getElementById("nome").value,
-                cpf: document.getElementById("cpf").value,
-                rg: document.getElementById("rg").value,
-                sintomas: document.getElementById("sintomas").value
-            };
-
-            const res = await fetch("/api/triagem", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(dados)
-            });
-
-            const json = await res.json();
-            document.getElementById("resposta").textContent = JSON.stringify(json, null, 2);
-        });
-    </script>
+        {% if resultado %}
+        <div class="resultado">
+            <h3>Resultado da Triagem:</h3>
+            <p><strong>Sintomas informados:</strong> {{ sintomas }}</p>
+            <p><strong>Possível doença:</strong> {{ doenca }}</p>
+            <p><strong>Especialista recomendado:</strong> {{ especialista }}</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

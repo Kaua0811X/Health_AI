@@ -1,60 +1,53 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template
 import joblib
-import datetime
-import json
-import os
+from googletrans import Translator
 
+# Inicialização
 app = Flask(__name__)
-modelo_doenca = joblib.load("modelo/modelo_doenca.pkl")
+modelo_doenca = joblib.load("modelo/modelo_doença.pkl")
 vetor = joblib.load("modelo/vetor.pkl")
+translator = Translator()
 
-# Mapeamento de doenças para especialidades
-mapeamento_especialidade = {
-    "Gastroenterite": "Gastroenterologia",
-    "Dengue": "Infectologia",
-    "Hipertensão": "Cardiologia",
-    # Adicione mais doenças e especialidades conforme necessário
+# Dicionário de exemplo com mapeamento de doença para especialista
+especialistas = {
+    "Flu": "Clínico Geral",
+    "Diabetes": "Endocrinologista",
+    "Hypertension": "Cardiologista",
+    "Asthma": "Pneumologista",
+    "Covid-19": "Infectologista",
+    "Migraine": "Neurologista",
+    "Depression": "Psiquiatra",
+    # Adicione mais se quiser
 }
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    resultado = None
+    sintomas = ""
 
-@app.route("/api/triagem", methods=["POST"])
-def triagem():
-    try:
-        dados = request.json
-        sintomas = dados["sintomas"]
-        nome = dados["nome"]
-        cpf = dados["cpf"]
-        rg = dados["rg"]
+    if request.method == "POST":
+        sintomas = request.form["sintomas"]
 
-        # Vetorizar os sintomas
-        sintomas_vet = vetor.transform([sintomas])
-        doenca_predita = modelo_doenca.predict(sintomas_vet)[0]
+        # Traduz os sintomas para inglês
+        sintomas_en = translator.translate(sintomas, src='pt', dest='en').text
 
-        # Mapear a especialidade
-        especialidade = mapeamento_especialidade.get(doenca_predita, "Especialidade não encontrada")
+        # Vetoriza e faz predição
+        vetorizado = vetor.transform([sintomas_en])
+        doenca_en = modelo_doenca.predict(vetorizado)[0]
 
-        ficha = {
-            "nome": nome,
-            "cpf": cpf,
-            "rg": rg,
+        # Traduz a doença para português
+        doenca_pt = translator.translate(doenca_en, src='en', dest='pt').text
+
+        # Obtém especialista com fallback
+        especialista = especialistas.get(doenca_en, "Clínico Geral")
+
+        resultado = {
             "sintomas": sintomas,
-            "doenca_sugerida": doenca_predita,
-            "especialidade_sugerida": especialidade,
-            "data_hora": datetime.datetime.now().isoformat()
+            "doenca": doenca_pt,
+            "especialista": especialista
         }
 
-        # Salvar ficha
-        os.makedirs("fichas", exist_ok=True)
-        with open(f"fichas/{nome}_{cpf}.json", "w", encoding="utf-8") as f:
-            json.dump(ficha, f, ensure_ascii=False, indent=4)
-
-        return jsonify(ficha)
-    
-    except Exception as e:
-        return jsonify({"erro": str(e)}), 400
+    return render_template("index.html", resultado=resultado, **(resultado or {}))
 
 if __name__ == "__main__":
     app.run(debug=True)

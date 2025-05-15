@@ -1,26 +1,47 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 import joblib
+import os
 
-# Carregar o dataset
-df = pd.read_csv("dados/dataset_balanceado.csv")  # Ajuste o caminho se necessário
+# Caminho para o CSV
+caminho_csv = "dados/dataset_balanceado.csv"
 
-# Ajuste as colunas de acordo com o seu dataset
-X = df["sintomas"]  # Sintomas
-y_doenca = df["disease"]  # Doença
+# Leitura do CSV
+df = pd.read_csv(caminho_csv)
 
-# Criar o vetor TF-IDF para os sintomas
-vetor = TfidfVectorizer(stop_words="english")
-X_vetorizado = vetor.fit_transform(X)
+# Verificação de colunas e limpeza
+df = df[["sintomas", "Disease"]].dropna()
 
-# Criar o modelo de previsão (Naive Bayes)
-modelo_doenca = MultinomialNB()
-modelo_doenca.fit(X_vetorizado, y_doenca)
+# Separar features e labels
+X = df["sintomas"]
+y = df["Disease"]
+
+# Dividir entre treino e teste (opcional, mas recomendado para avaliar o modelo)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Criar pipeline com vetorizador e modelo
+pipeline = Pipeline([
+    ("vetor", TfidfVectorizer()),
+    ("modelo", RandomForestClassifier(n_estimators=100, random_state=42))
+])
+
+# Treinar o modelo
+pipeline.fit(X_train, y_train)
+
+# Avaliação rápida (printa o resultado no console)
+y_pred = pipeline.predict(X_test)
+print("Relatório de classificação:")
+print(classification_report(y_test, y_pred))
+
+# Criar pasta "modelo" se não existir
+os.makedirs("modelo", exist_ok=True)
 
 # Salvar o modelo e o vetor
-joblib.dump(modelo_doenca, "modelo/modelo_doenca.pkl")
-joblib.dump(vetor, "modelo/vetor.pkl")
+joblib.dump(pipeline.named_steps["modelo"], "modelo/modelo_doença.pkl")
+joblib.dump(pipeline.named_steps["vetor"], "modelo/vetor.pkl")
 
-print("Modelo de doenças treinado e salvo com sucesso.")
+print("✅ Modelo e vetor salvos com sucesso em /modelo")
