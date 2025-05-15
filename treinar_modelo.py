@@ -1,47 +1,42 @@
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import os
 
-# Caminho para o CSV
-caminho_csv = "dados/dataset_balanceado.csv"
+# Carrega dados principais
+df = pd.read_csv("dados/dataset_balanceado.csv")
+df.dropna(inplace=True)
+df['symptom'] = df['symptom'].str.lower().str.strip()
 
-# Leitura do CSV
-df = pd.read_csv(caminho_csv)
+# Junta com novos dados, se existirem
+if os.path.exists("dados/novos_dados.csv"):
+    novos = pd.read_csv("dados/novos_dados.csv", names=["symptom", "diagnosis"])
+    novos['symptom'] = novos['symptom'].str.lower().str.strip()
+    df = pd.concat([df, novos], ignore_index=True)
 
-# Verificação de colunas e limpeza
-df = df[["sintomas", "Disease"]].dropna()
-
-# Separar features e labels
-X = df["sintomas"]
-y = df["Disease"]
-
-# Dividir entre treino e teste (opcional, mas recomendado para avaliar o modelo)
+# Divisão
+X = df['symptom']
+y = df['diagnosis']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Criar pipeline com vetorizador e modelo
+# Pipeline
 pipeline = Pipeline([
-    ("vetor", TfidfVectorizer()),
-    ("modelo", RandomForestClassifier(n_estimators=100, random_state=42))
+    ('vectorizer', CountVectorizer()),
+    ('classifier', MultinomialNB())
 ])
 
-# Treinar o modelo
 pipeline.fit(X_train, y_train)
 
-# Avaliação rápida (printa o resultado no console)
+# Avaliação
 y_pred = pipeline.predict(X_test)
-print("Relatório de classificação:")
-print(classification_report(y_test, y_pred))
+print("Acurácia:", accuracy_score(y_test, y_pred))
+print("Relatório de classificação:\n", classification_report(y_test, y_pred))
+print("Distribuição de classes:\n", df['diagnosis'].value_counts())
 
-# Criar pasta "modelo" se não existir
-os.makedirs("modelo", exist_ok=True)
-
-# Salvar o modelo e o vetor
-joblib.dump(pipeline.named_steps["modelo"], "modelo/modelo_doença.pkl")
-joblib.dump(pipeline.named_steps["vetor"], "modelo/vetor.pkl")
-
-print("✅ Modelo e vetor salvos com sucesso em /modelo")
+# Salva modelo e vetor
+joblib.dump(pipeline, "modelo/modelo_doença.pkl")
+joblib.dump(pipeline.named_steps["vectorizer"], "modelo/vetor.pkl")
