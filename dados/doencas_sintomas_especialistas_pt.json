@@ -1,0 +1,167 @@
+[
+  {
+    "doenca": "Gripe",
+    "especialista": "Clínico Geral",
+    "sintomas": [
+      "febre",
+      "dor de cabeça",
+      "dor muscular",
+      "tosse",
+      "congestão nasal"
+    ]
+  },
+  {
+    "doenca": "Dengue",
+    "especialista": "Infectologista",
+    "sintomas": [
+      "febre alta",
+      "dor atrás dos olhos",
+      "dor muscular",
+      "manchas vermelhas na pele",
+      "cansaço"
+    ]
+  },
+  {
+    "doenca": "COVID-19",
+    "especialista": "Infectologista",
+    "sintomas": [
+      "febre",
+      "tosse seca",
+      "cansaço",
+      "perda de olfato",
+      "dificuldade para respirar"
+    ]
+  },
+  {
+    "doenca": "Diabetes tipo 2",
+    "especialista": "Endocrinologista",
+    "sintomas": [
+      "sede excessiva",
+      "urina frequente",
+      "visão embaçada",
+      "fome excessiva",
+      "cansaço"
+    ]
+  },
+  {
+    "doenca": "Hipertensão",
+    "especialista": "Cardiologista",
+    "sintomas": [
+      "dor de cabeça",
+      "tontura",
+      "visão turva",
+      "falta de ar",
+      "dor no peito"
+    ]
+  },
+  {
+    "doenca": "Gastrite",
+    "especialista": "Gastroenterologista",
+    "sintomas": [
+      "dor abdominal",
+      "azia",
+      "náusea",
+      "sensação de estômago cheio",
+      "vômito"
+    ]
+  },
+  {
+    "doenca": "Enxaqueca",
+    "especialista": "Neurologista",
+    "sintomas": [
+      "dor de cabeça intensa",
+      "sensibilidade à luz",
+      "náusea",
+      "vômito",
+      "alterações visuais"
+    ]
+  },
+  {
+    "doenca": "Apendicite",
+    "especialista": "Cirurgião Geral",
+    "sintomas": [
+      "dor abdominal intensa",
+      "náusea",
+      "vômito",
+      "febre",
+      "perda de apetite"
+    ]
+  },
+  {
+    "doenca": "Asma",
+    "especialista": "Pneumologista",
+    "sintomas": [
+      "falta de ar",
+      "chiado no peito",
+      "tosse",
+      "opressão no peito",
+      "dificuldade para respirar"
+    ]
+  },
+  {
+    "doenca": "Bronquite",
+    "especialista": "Pneumologista",
+    "sintomas": [
+      "tosse persistente",
+      "muco",
+      "falta de ar",
+      "cansaço",
+      "desconforto no peito"
+    ]
+  },
+  {
+    "doenca": "Pneumonia",
+    "especialista": "Infectologista",
+    "sintomas": [
+      "febre alta",
+      "calafrios",
+      "tosse com catarro",
+      "dor no peito",
+      "falta de ar"
+    ]
+  },
+  {
+    "doenca": "Infecção urinária",
+    "especialista": "Urologista",
+    "sintomas": [
+      "dor ao urinar",
+      "urgência urinária",
+      "urina turva",
+      "dor abdominal",
+      "febre"
+    ]
+  },
+  {
+    "doenca": "Cistite",
+    "especialista": "Urologista",
+    "sintomas": [
+      "urgência urinária",
+      "dor ao urinar",
+      "sangue na urina",
+      "dor pélvica",
+      "febre baixa"
+    ]
+  },
+  {
+    "doenca": "Artrite",
+    "especialista": "Reumatologista",
+    "sintomas": [
+      "dor nas articulações",
+      "inchaço",
+      "rigidez matinal",
+      "vermelhidão",
+      "limitação de movimento"
+    ]
+  },
+  {
+    "doenca": "Depressão",
+    "especialista": "Psiquiatra",
+    "sintomas": [
+      "tristeza persistente",
+      "perda de interesse",
+      "fadiga",
+      "alterações no sono",
+      "dificuldade de concentração"
+    ]
+  }
+]

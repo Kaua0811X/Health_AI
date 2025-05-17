@@ -1,26 +1,15 @@
 from flask import Flask, request, render_template
 import joblib
-import pandas as pd
-from googletrans import Translator
+import json
 import os
 
 # Inicialização
 app = Flask(__name__)
-modelo_doenca = joblib.load("modelo/modelo_doença.pkl")
-vetor = joblib.load("modelo/vetor.pkl")
-translator = Translator()
+modelo_doenca = joblib.load("modelo/modelo_doenca.pkl")
 
-# Mapeamento de doenças para especialistas
-especialistas = {
-    "Flu": "Clínico Geral",
-    "Diabetes": "Endocrinologista",
-    "Hypertension": "Cardiologista",
-    "Asthma": "Pneumologista",
-    "Covid-19": "Infectologista",
-    "Migraine": "Neurologista",
-    "Depression": "Psiquiatra",
-    # Adicione mais se quiser
-}
+# Carrega dicionário de especialistas gerado no treinamento
+with open("modelo/especialistas.json", "r", encoding="utf-8") as f:
+    especialistas_dict = json.load(f)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -29,31 +18,32 @@ def index():
 
     if request.method == "POST":
         sintomas = request.form["sintomas"]
-        correcao = request.form.get("correcao")  # Correção opcional
+        correcao = request.form.get("correcao")
 
-        # Traduz sintomas para inglês
-        sintomas_en = translator.translate(sintomas, src='pt', dest='en').text
+        # Predição usando sintomas em português
+        doenca_pt = modelo_doenca.predict([sintomas.lower().strip()])[0]
+        especialista = especialistas_dict.get(doenca_pt, "Clínico Geral")
 
-        # Vetoriza e prediz
-        vetorizado = vetor.transform([sintomas_en])
-        doenca_en = modelo_doenca.predict(vetorizado)[0]
-        doenca_pt = translator.translate(doenca_en, src='en', dest='pt').text
-
-        especialista = especialistas.get(doenca_en, "Clínico Geral")
-
-        # Salvar a correção se o usuário preencheu
+        # Armazena correção do usuário (se fornecida)
         if correcao and correcao.strip():
-            correcao_en = translator.translate(correcao, src='pt', dest='en').text
-            nova_linha = pd.DataFrame([[sintomas_en, correcao_en]], columns=["symptom", "disease"])
+            novo_registro = {
+                "sintomas": sintomas,
+                "correcao": correcao
+            }
 
-            # Cria ou anexa ao arquivo de correções
-            caminho_corrigido = "dados/correcoes_usuario.csv"
+            caminho_corrigido = "dados/correcoes_usuario.json"
             if os.path.exists(caminho_corrigido):
-                nova_linha.to_csv(caminho_corrigido, mode='a', header=False, index=False)
+                with open(caminho_corrigido, "r", encoding="utf-8") as f:
+                    dados_existentes = json.load(f)
             else:
-                nova_linha.to_csv(caminho_corrigido, mode='w', header=True, index=False)
+                dados_existentes = []
 
-        # Resultado enviado ao HTML
+            dados_existentes.append(novo_registro)
+
+            with open(caminho_corrigido, "w", encoding="utf-8") as f:
+                json.dump(dados_existentes, f, ensure_ascii=False, indent=2)
+
+        # Prepara resultado para exibição
         resultado = {
             "sintomas": sintomas,
             "doenca_pt": doenca_pt,
@@ -61,7 +51,6 @@ def index():
         }
 
     return render_template("index.html", resultado=resultado, **(resultado or {}))
-
 
 if __name__ == "__main__":
     app.run(debug=True)

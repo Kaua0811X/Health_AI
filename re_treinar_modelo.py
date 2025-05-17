@@ -1,33 +1,40 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+from googletrans import Translator
 import joblib
-import os
 
-# Carrega o dataset original
+# 1. Carregar o dataset original (em inglês)
 df = pd.read_csv("dados/dataset_balanceado.csv")
 
-# Carrega as correções dos usuários (se existirem)
-caminho_corrigido = "dados/correcoes_usuario.csv"
-if os.path.exists(caminho_corrigido):
-    correcoes = pd.read_csv(caminho_corrigido)
-    df = pd.concat([df, correcoes], ignore_index=True)
+# 2. Traduzir os sintomas e doenças para português
+translator = Translator()
 
-# Separação de dados
-X = df["symptom"]
-y = df["disease"]
+def traduzir_lista(textos):
+    traduzidos = []
+    for texto in textos:
+        try:
+            t = translator.translate(texto, src='en', dest='pt').text
+            traduzidos.append(t)
+        except:
+            traduzidos.append(texto)  # fallback
+    return traduzidos
 
-# Vetorização
+df["symptom_pt"] = traduzir_lista(df["symptom"])
+df["disease_pt"] = traduzir_lista(df["disease"])
+
+# 3. Treinamento
 vetor = TfidfVectorizer()
-X_vetor = vetor.fit_transform(X)
+X = vetor.fit_transform(df["symptom_pt"])
+y = df["disease_pt"]
 
-# Treinamento
 modelo = MultinomialNB()
-modelo.fit(X_vetor, y)
+modelo.fit(X, y)
 
-# Salvamento
-joblib.dump(modelo, "modelo/modelo_doença.pkl")
-joblib.dump(vetor, "modelo/vetor.pkl")
+# 4. Salvar os arquivos treinados
+joblib.dump(modelo, "modelo_doenca_pt.pkl")
+joblib.dump(vetor, "vetor_pt.pkl")
 
-print("Modelo re-treinado e salvo com sucesso.")
+# 5. Salvar CSV traduzido para conferência (opcional)
+df.to_csv("dataset_traduzido.csv", index=False)

@@ -1,0 +1,17 @@
+{
+  "Gripe": "Clínico Geral",
+  "Dengue": "Infectologista",
+  "COVID-19": "Infectologista",
+  "Diabetes tipo 2": "Endocrinologista",
+  "Hipertensão": "Cardiologista",
+  "Gastrite": "Gastroenterologista",
+  "Enxaqueca": "Neurologista",
+  "Apendicite": "Cirurgião Geral",
+  "Asma": "Pneumologista",
+  "Bronquite": "Pneumologista",
+  "Pneumonia": "Infectologista",
+  "Infecção urinária": "Urologista",
+  "Cistite": "Urologista",
+  "Artrite": "Reumatologista",
+  "Depressão": "Psiquiatra"
+}
