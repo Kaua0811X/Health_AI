@@ -7,15 +7,13 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import json
 import os
+import numpy as np
 
-# Caminho do novo dataset com especialista incluso
+# Carrega dataset principal
 json_path = "dados/doencas_sintomas_especialistas_pt.json"
-
-# Carrega o JSON
 with open(json_path, "r", encoding="utf-8") as f:
     dados = json.load(f)
 
-# Constrói DataFrame expandido e dicionário de especialistas
 linhas = []
 especialistas_dict = {}
 
@@ -29,7 +27,7 @@ for item in dados:
 
 df = pd.DataFrame(linhas)
 
-# Adiciona correções do usuário, se existirem
+# Adiciona correções do usuário, se houver
 correcao_path = "dados/correcoes_usuario.json"
 if os.path.exists(correcao_path):
     with open(correcao_path, "r", encoding="utf-8") as f:
@@ -43,31 +41,26 @@ if os.path.exists(correcao_path):
         correcoes_df["diagnosis"] = correcoes_df["diagnosis"].str.strip()
         df = pd.concat([df, correcoes_df], ignore_index=True)
 
-# Separa dados de treino
+# Vetorização e treino com partial_fit
 X = df["symptom"]
 y = df["diagnosis"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Cria pipeline
-pipeline = Pipeline([
-    ("vectorizer", CountVectorizer()),
-    ("classifier", MultinomialNB())
-])
+vectorizer = CountVectorizer()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
 
-# Treina modelo
-pipeline.fit(X_train, y_train)
+modelo = MultinomialNB()
+modelo.partial_fit(X_train_vec, y_train, classes=np.unique(y))
 
 # Avaliação
-y_pred = pipeline.predict(X_test)
+y_pred = modelo.predict(X_test_vec)
 print("Acurácia:", accuracy_score(y_test, y_pred))
 print("Relatório de Classificação:\n", classification_report(y_test, y_pred))
-print("Distribuição das Classes:\n", df["diagnosis"].value_counts())
 
-# Salva modelo e vetor
+# Salva tudo
 os.makedirs("modelo", exist_ok=True)
-joblib.dump(pipeline, "modelo/modelo_doenca.pkl")
-joblib.dump(pipeline.named_steps["vectorizer"], "modelo/vetor.pkl")
-
-# Salva dicionário de especialistas
+joblib.dump(modelo, "modelo/modelo_doenca.pkl")
+joblib.dump(vectorizer, "modelo/vetor.pkl")
 with open("modelo/especialistas.json", "w", encoding="utf-8") as f:
     json.dump(especialistas_dict, f, ensure_ascii=False, indent=2)
