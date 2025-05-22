@@ -1,79 +1,150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>HealthAI - Triagem Inteligente</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css" />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f2f2f2;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f2f2f2;
+      }
 
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 600px;
-            margin: auto;
-            box-shadow: 0 0 12px rgba(0,0,0,0.1);
-        }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      }
 
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-        }
+      h1 {
+        color: #2c3e50;
+        text-align: center;
+      }
 
-        textarea, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        resize: vertical;
+      }
 
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
-            margin-top: 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 15px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
 
-        .resultado {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e0f7fa;
-            border-left: 5px solid #00796b;
-            border-radius: 8px;
-        }
+      button.retrain {
+        background-color: #27ae60;
+        float: right;
+      }
+
+      .resultado {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e0f7fa;
+        border-left: 5px solid #00796b;
+        border-radius: 8px;
+      }
+
+      .alerta {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+      }
+
+      .sucesso {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .erro {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>HealthAI - Triagem Médica</h1>
-        <form method="POST">
-            <label for="sintomas">Descreva seus sintomas:</label>
-            <textarea id="sintomas" name="sintomas" placeholder="Ex: dor de cabeça, fadiga, febre...">{{ sintomas or '' }}</textarea>
-            <button type="submit">Analisar</button>
+      <h1>HealthAI - Triagem Médica</h1>
+      <form method="POST">
+        <label for="sintomas">Descreva seus sintomas:</label>
+        <textarea
+          id="sintomas"
+          name="sintomas"
+          placeholder="Ex: dor de cabeça, fadiga, febre..."
+        >
+{{ sintomas or '' }}</textarea
+        >
 
-            {% if resultado %}
-            <div class="resultado">
-                <h3>Resultado da Triagem:</h3>
-                <p><strong>Sintomas informados:</strong> {{ sintomas }}</p>
-                <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
-                <p><strong>Especialista recomendado:</strong> {{ resultado.especialista }}</p>
+        <button type="submit">Analisar</button>
 
-                <!-- Novo campo de correção -->
-                <label for="correcao">A previsão está errada? Corrija abaixo:</label>
-                <input type="text" id="correcao" name="correcao" placeholder="Digite a doença correta (opcional)">
-            </div>
-            {% endif %}
-        </form>
+        {% if resultado %}
+        <div class="resultado">
+          <h3>Resultado da Triagem:</h3>
+          <p><strong>Sintomas informados:</strong> {{ sintomas }}</p>
+          <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
+          <p>
+            <strong>Especialista recomendado:</strong> {{ resultado.especialista
+            }}
+          </p>
+
+          <label for="correcao">A previsão está errada? Corrija abaixo:</label>
+          <input
+            type="text"
+            id="correcao"
+            name="correcao"
+            placeholder="Digite a doença correta (opcional)"
+          />
+        </div>
+        {% endif %}
+      </form>
+
+      <div id="alerta"></div>
     </div>
-</body>
+
+    <script>
+      function handleEnter(e) {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Evita envio duplo do formulário
+
+          // Primeiro envia o formulário
+          e.target.form.submit();
+
+          // Depois chama re-treinamento com pequeno delay
+          setTimeout(() => {
+            fetch("/retrain", { method: "POST" })
+              .then((res) => res.json())
+              .then((data) => {
+                const alerta = document.getElementById("alerta");
+                if (!alerta) return;
+                if (data.status === "ok") {
+                  alerta.innerHTML = `<div class="alerta sucesso">${data.mensagem}</div>`;
+                } else {
+                  alerta.innerHTML = `<div class="alerta erro">${
+                    data.mensagem
+                  }<br><small>${data.detalhes || ""}</small></div>`;
+                }
+              })
+              .catch((err) => {
+                const alerta = document.getElementById("alerta");
+                if (alerta)
+                  alerta.innerHTML = `<div class="alerta erro">Erro ao re-treinar: ${err.message}</div>`;
+              });
+          }, 1000);
+        }
+      }
+    </script>
+  </body>
 </html>
