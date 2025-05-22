@@ -1,0 +1,133 @@
+from flask import Flask, request, render_template, jsonify
+import joblib
+import json
+import os
+import numpy as np
+import logging
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
+from datetime import datetime
+import subprocess
+
+app = Flask(__name__)
+Talisman(app)
+
+# Limita acessos por IP
+limiter = Limiter(app, key_func=get_remote_address)
+
+# Configura logging
+os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    filename="logs/triagem_app.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+# Carrega modelo e vetor
+modelo_doenca = joblib.load("modelo/modelo_doenca.pkl")
+vetor = joblib.load("modelo/vetor.pkl")
+
+# Carrega dicionário de especialistas
+with open("modelo/especialistas.json", "r", encoding="utf-8") as f:
+    especialistas_dict = json.load(f)
+
+@app.before_request
+def log_request_info():
+    user_ip = request.remote_addr
+    logging.info(f"Acesso de {user_ip} na rota {request.path}")
+
+@app.route("/", methods=["GET", "POST"])
+@limiter.limit("10 per minute")
+def index():
+    resultado = None
+    sintomas = ""
+
+    if request.method == "POST":
+        sintomas = request.form["sintomas"]
+        correcao = request.form.get("correcao")
+
+        sintomas_tratado = sintomas.lower().strip()
+
+        # Verifica anomalias
+        if detectar_anomalia(sintomas_tratado):
+            logging.warning(f"Entrada suspeita detectada: {sintomas_tratado}")
+
+        sintomas_vector = vetor.transform([sintomas_tratado])
+
+        doenca_pt = modelo_doenca.predict(sintomas_vector)[0]
+        especialista = especialistas_dict.get(doenca_pt, "Clínico Geral")
+
+        if correcao and correcao.strip():
+            correcao = correcao.strip()
+
+            novo_registro = {
+                "sintomas": sintomas,
+                "correcao": correcao
+            }
+
+            caminho_corrigido = "dados/correcoes_usuario.json"
+            if os.path.exists(caminho_corrigido):
+                with open(caminho_corrigido, "r", encoding="utf-8") as f:
+                    dados_existentes = json.load(f)
+            else:
+                dados_existentes = []
+
+            dados_existentes.append(novo_registro)
+            with open(caminho_corrigido, "w", encoding="utf-8") as f:
+                json.dump(dados_existentes, f, ensure_ascii=False, indent=2)
+
+            try:
+                modelo_doenca.partial_fit(sintomas_vector, [correcao], classes=np.unique(modelo_doenca.classes_))
+                joblib.dump(modelo_doenca, "modelo/modelo_doenca.pkl")
+            except Exception as e:
+                logging.error(f"Erro ao aprender com correção: {e}")
+
+            doenca_pt = correcao
+            especialista = especialistas_dict.get(doenca_pt, "Clínico Geral")
+
+        resultado = {
+            "sintomas": sintomas,
+            "doenca_pt": doenca_pt,
+            "especialista": especialista
+        }
+
+        logging.info(f"Sintomas: {sintomas} | Resultado: {doenca_pt} | Especialista: {especialista}")
+
+    return render_template("index.html", resultado=resultado, **(resultado or {}))
+
+
+def detectar_anomalia(sintomas):
+    palavras_suspeitas = ["<script>", "drop table", "select * from"]
+    for p in palavras_suspeitas:
+        if p in sintomas:
+            return True
+    return False
+
+
+@app.route("/retrain", methods=["POST"])
+def retrain():
+    secret = request.args.get("secret")
+    if secret != "suachavesecreta123":
+        logging.warning("Tentativa de acesso não autorizado ao /retrain")
+        return jsonify({"status": "erro", "mensagem": "Acesso negado"}), 403
+
+    try:
+        result = subprocess.run(["python", "treinar_modelo.py"], capture_output=True, text=True)
+        if result.returncode == 0:
+            logging.info("Modelo re-treinado com sucesso.")
+            return jsonify({"status": "ok", "mensagem": "Modelo re-treinado com sucesso!"})
+        else:
+            logging.error(f"Erro ao treinar o modelo: {result.stderr}")
+            return jsonify({
+                "status": "erro",
+                "mensagem": "Erro ao treinar o modelo",
+                "detalhes": result.stderr
+            }), 500
+    except Exception as e:
+        logging.critical(f"Erro crítico ao re-treinar modelo: {e}")
+        return jsonify({"status": "erro", "mensagem": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

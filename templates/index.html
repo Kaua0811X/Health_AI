@@ -1,150 +1,199 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>HealthAI - Triagem Inteligente</title>
-    <link rel="stylesheet" href="/static/style.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthAI - Triagem Médica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-        background-color: #f2f2f2;
-      }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            color: #003366;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
 
-      .container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        max-width: 600px;
-        margin: auto;
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      }
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 51, 102, 0.5);
+        }
 
-      h1 {
-        color: #2c3e50;
-        text-align: center;
-      }
+        main {
+            padding-top: 30px; /* REDUZIDO */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: calc(100vh - 120px);
+        }
 
-      textarea,
-      input[type="text"] {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        resize: vertical;
-      }
+        .logo-container {
+            margin-bottom: 20px;
+        }
 
-      button {
-        background-color: #3498db;
-        color: white;
-        padding: 10px 15px;
-        margin-top: 15px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
+        .logo-container img {
+            width: 160px;
+            height: auto;
+        }
 
-      button.retrain {
-        background-color: #27ae60;
-        float: right;
-      }
+        .input-container {
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
 
-      .resultado {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #e0f7fa;
-        border-left: 5px solid #00796b;
-        border-radius: 8px;
-      }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            resize: none;
+            background-color: #e6f2ff;
+            color: #003366;
+            outline: none;
+            box-shadow: 0 0 6px rgba(0, 51, 102, 0.5);
+        }
 
-      .alerta {
-        margin-top: 15px;
-        padding: 10px;
-        border-radius: 6px;
-      }
+        button {
+            margin-top: 15px;
+            padding: 12px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #003366, #0077cc);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+        }
 
-      .sucesso {
-        background-color: #d4edda;
-        color: #155724;
-      }
+        button:hover {
+            background: linear-gradient(45deg, #002244, #0055aa);
+            transform: scale(1.05);
+        }
 
-      .erro {
-        background-color: #f8d7da;
-        color: #721c24;
-      }
+        .response {
+            display: none;
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            box-shadow: 0 0 6px rgba(0, 51, 102, 0.5);
+            text-align: left;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            background-color: #003366;
+            padding: 15px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .contact {
+            color: #ffffff;
+            font-weight: bold;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>HealthAI - Triagem Médica</h1>
-      <form method="POST">
-        <label for="sintomas">Descreva seus sintomas:</label>
-        <textarea
-          id="sintomas"
-          name="sintomas"
-          placeholder="Ex: dor de cabeça, fadiga, febre..."
-        >
-{{ sintomas or '' }}</textarea
-        >
+</head>
+<body>
 
-        <button type="submit">Analisar</button>
+    <header>
+        <p>HealthAI – Inteligência Artificial de Triagem Médica</p>
+    </header>
 
-        {% if resultado %}
-        <div class="resultado">
-          <h3>Resultado da Triagem:</h3>
-          <p><strong>Sintomas informados:</strong> {{ sintomas }}</p>
-          <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
-          <p>
-            <strong>Especialista recomendado:</strong> {{ resultado.especialista
-            }}
-          </p>
-
-          <label for="correcao">A previsão está errada? Corrija abaixo:</label>
-          <input
-            type="text"
-            id="correcao"
-            name="correcao"
-            placeholder="Digite a doença correta (opcional)"
-          />
+    <main>
+        <!-- LOGO -->
+        <div class="logo-container">
+            <img src="templates/images/logo.jpg.jpg" alt="HealthAI Logo">
         </div>
-        {% endif %}
-      </form>
 
-      <div id="alerta"></div>
-    </div>
+        <!-- CAMPO DE TEXTO -->
+        <div class="input-container">
+            <label for="symptoms">Descreva seus sintomas:</label>
+            <textarea id="symptoms" placeholder="Digite seus sintomas aqui..."></textarea>
+            <button onclick="analyzeSymptoms()">Analisar</button>
+        </div>
+
+        <div class="response" id="responseMessage"></div>
+
+        <div class="result-container" id="triageResult">
+            <h2>Resultado da Triagem:</h2>
+            <p><strong>Sintomas informados:</strong> <span id="reportedSymptoms"></span></p>
+            <p><strong>Possível doença:</strong> <span id="possibleDisease">Hipertensão</span></p>
+            <p><strong>Especialista recomendado:</strong> <span id="recommendedSpecialist">Cardiologista</span></p>
+
+            <label for="correctDisease">Digite a doença correta (opcional):</label>
+            <textarea id="correctDisease" placeholder="Digite a doença correta aqui..."></textarea>
+            <button onclick="submitCorrection()">Enviar sugestão</button>
+        </div>
+    </main>
+
+    <footer>
+        <p class="contact">Contato: contato@healthai.com</p>
+    </footer>
 
     <script>
-      function handleEnter(e) {
-        if (e.key === "Enter") {
-          e.preventDefault(); // Evita envio duplo do formulário
+        function analyzeSymptoms() {
+            let symptoms = document.getElementById("symptoms").value.trim();
+            let responseMessage = document.getElementById("responseMessage");
+            let triageResult = document.getElementById("triageResult");
+            let reportedSymptoms = document.getElementById("reportedSymptoms");
 
-          // Primeiro envia o formulário
-          e.target.form.submit();
+            if (symptoms === "") {
+                alert("Por favor, descreva seus sintomas antes de analisar.");
+                return;
+            }
 
-          // Depois chama re-treinamento com pequeno delay
-          setTimeout(() => {
-            fetch("/retrain", { method: "POST" })
-              .then((res) => res.json())
-              .then((data) => {
-                const alerta = document.getElementById("alerta");
-                if (!alerta) return;
-                if (data.status === "ok") {
-                  alerta.innerHTML = `<div class="alerta sucesso">${data.mensagem}</div>`;
-                } else {
-                  alerta.innerHTML = `<div class="alerta erro">${
-                    data.mensagem
-                  }<br><small>${data.detalhes || ""}</small></div>`;
-                }
-              })
-              .catch((err) => {
-                const alerta = document.getElementById("alerta");
-                if (alerta)
-                  alerta.innerHTML = `<div class="alerta erro">Erro ao re-treinar: ${err.message}</div>`;
-              });
-          }, 1000);
+            reportedSymptoms.innerText = symptoms;
+            responseMessage.style.display = "block";
+            responseMessage.style.animation = "fadeIn 1s ease-in-out";
+            responseMessage.innerHTML = "Análise concluída! Consulte um médico para uma avaliação detalhada.";
+
+            triageResult.style.display = "block";
+            triageResult.style.animation = "fadeIn 1s ease-in-out";
         }
-      }
+
+        function submitCorrection() {
+            let correction = document.getElementById("correctDisease").value.trim();
+            if (correction === "") {
+                alert("Por favor, insira uma sugestão antes de enviar.");
+                return;
+            }
+            alert("Obrigado pela sugestão! Vamos analisá-la.");
+        }
     </script>
-  </body>
+
+</body>
 </html>
