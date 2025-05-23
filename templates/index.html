@@ -25,7 +25,7 @@
         }
 
         main {
-            padding-top: 30px; /* REDUZIDO */
+            padding-top: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -80,16 +80,7 @@
             transform: scale(1.05);
         }
 
-        .response {
-            display: none;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            animation: fadeIn 1s ease-in-out;
-        }
-
         .result-container {
-            display: none;
             margin-top: 30px;
             padding: 20px;
             background-color: #e6f2ff;
@@ -98,17 +89,6 @@
             text-align: left;
             width: 80%;
             max-width: 600px;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         footer {
@@ -134,66 +114,33 @@
     </header>
 
     <main>
-        <!-- LOGO -->
         <div class="logo-container">
-            <img src="templates/images/logo.jpg.jpg" alt="HealthAI Logo">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="HealthAI Logo">
         </div>
 
-        <!-- CAMPO DE TEXTO -->
-        <div class="input-container">
+        <form method="POST" class="input-container">
             <label for="symptoms">Descreva seus sintomas:</label>
-            <textarea id="symptoms" placeholder="Digite seus sintomas aqui..."></textarea>
-            <button onclick="analyzeSymptoms()">Analisar</button>
-        </div>
+            <textarea id="symptoms" name="sintomas" placeholder="Digite seus sintomas aqui...">{{ sintomas or '' }}</textarea>
+            <button type="submit">Analisar</button>
 
-        <div class="response" id="responseMessage"></div>
+            {% if resultado %}
+            <div class="result-container">
+                <h2>Resultado da Triagem:</h2>
+                <p><strong>Sintomas informados:</strong> {{ resultado.sintomas }}</p>
+                <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
+                <p><strong>Especialista recomendado:</strong> {{ resultado.especialista }}</p>
 
-        <div class="result-container" id="triageResult">
-            <h2>Resultado da Triagem:</h2>
-            <p><strong>Sintomas informados:</strong> <span id="reportedSymptoms"></span></p>
-            <p><strong>Possível doença:</strong> <span id="possibleDisease">Hipertensão</span></p>
-            <p><strong>Especialista recomendado:</strong> <span id="recommendedSpecialist">Cardiologista</span></p>
-
-            <label for="correctDisease">Digite a doença correta (opcional):</label>
-            <textarea id="correctDisease" placeholder="Digite a doença correta aqui..."></textarea>
-            <button onclick="submitCorrection()">Enviar sugestão</button>
-        </div>
+                <label for="correcao">Digite a doença correta (opcional):</label>
+                <textarea id="correcao" name="correcao" placeholder="Digite a doença correta aqui..."></textarea>
+                <button type="submit">Enviar sugestão</button>
+            </div>
+            {% endif %}
+        </form>
     </main>
 
     <footer>
         <p class="contact">Contato: contato@healthai.com</p>
     </footer>
-
-    <script>
-        function analyzeSymptoms() {
-            let symptoms = document.getElementById("symptoms").value.trim();
-            let responseMessage = document.getElementById("responseMessage");
-            let triageResult = document.getElementById("triageResult");
-            let reportedSymptoms = document.getElementById("reportedSymptoms");
-
-            if (symptoms === "") {
-                alert("Por favor, descreva seus sintomas antes de analisar.");
-                return;
-            }
-
-            reportedSymptoms.innerText = symptoms;
-            responseMessage.style.display = "block";
-            responseMessage.style.animation = "fadeIn 1s ease-in-out";
-            responseMessage.innerHTML = "Análise concluída! Consulte um médico para uma avaliação detalhada.";
-
-            triageResult.style.display = "block";
-            triageResult.style.animation = "fadeIn 1s ease-in-out";
-        }
-
-        function submitCorrection() {
-            let correction = document.getElementById("correctDisease").value.trim();
-            if (correction === "") {
-                alert("Por favor, insira uma sugestão antes de enviar.");
-                return;
-            }
-            alert("Obrigado pela sugestão! Vamos analisá-la.");
-        }
-    </script>
 
 </body>
 </html>
