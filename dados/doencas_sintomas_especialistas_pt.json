@@ -163,5 +163,59 @@
       "alterações no sono",
       "dificuldade de concentração"
     ]
-  }
+  },
+  {
+    "doenca": "Avc",
+    "especialista": "Neurologista",
+    "sintomas": [
+      "paralisia súbita",
+      "boca torta",
+      "perda de visão",
+      "alterações na fala"
+    ]
+  },
+  {
+    "doenca": "Fraturas",
+    "especialista": "Ortopedista",
+    "sintomas": [
+      "inchaço",
+      "sensibilidade ao toque",
+      "dificuldade de movimentação",
+      "incapacidade de movimentar o membro",
+      "fraturas visíveis",
+      "dormência",
+      "formigamento"
+    ]
+  },
+  {"doenca": "Virose",
+    "especialista": "Clinico Geral",
+    "sintomas": [
+      "náusea",
+      "Vomito",
+      "diarreia",
+      "febre",
+      "mal-estar"
+    ]
+  },
+  {
+  "doenca": "Candidiase",
+  "especialista": "Ginecologista",
+  "sintomas": [
+    "coceira intensa na região íntima",
+    "corrimento branco e espesso",
+    "vermelhidão e inchaço na região genital",
+    "dor ou ardência ao urinar",
+    "desconforto durante a relação sexual"
+  ]
+},
+{
+  "doenca": "Câncer de Próstata",
+  "especialista": "Urologista",
+  "sintomas": [
+    "dificuldade para urinar",
+    "jato urinário fraco ou interrompido",
+    "urinar com frequência, especialmente à noite",
+    "presença de sangue na urina ou no sêmen"
+  ]
+}
 ]
