@@ -1,150 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>HealthAI - Triagem Inteligente</title>
-    <link rel="stylesheet" href="/static/style.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthAI - Triagem Médica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-        background-color: #f2f2f2;
-      }
-
-      .container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        max-width: 600px;
-        margin: auto;
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-      }
-
-      h1 {
-        color: #2c3e50;
-        text-align: center;
-      }
-
-      textarea,
-      input[type="text"] {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        resize: vertical;
-      }
-
-      button {
-        background-color: #3498db;
-        color: white;
-        padding: 10px 15px;
-        margin-top: 15px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      button.retrain {
-        background-color: #27ae60;
-        float: right;
-      }
-
-      .resultado {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #e0f7fa;
-        border-left: 5px solid #00796b;
-        border-radius: 8px;
-      }
-
-      .alerta {
-        margin-top: 15px;
-        padding: 10px;
-        border-radius: 6px;
-      }
-
-      .sucesso {
-        background-color: #d4edda;
-        color: #155724;
-      }
-
-      .erro {
-        background-color: #f8d7da;
-        color: #721c24;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>HealthAI - Triagem Médica</h1>
-      <form method="POST">
-        <label for="sintomas">Descreva seus sintomas:</label>
-        <textarea
-          id="sintomas"
-          name="sintomas"
-          placeholder="Ex: dor de cabeça, fadiga, febre..."
-        >
-{{ sintomas or '' }}</textarea
-        >
-
-        <button type="submit">Analisar</button>
-
-        {% if resultado %}
-        <div class="resultado">
-          <h3>Resultado da Triagem:</h3>
-          <p><strong>Sintomas informados:</strong> {{ sintomas }}</p>
-          <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
-          <p>
-            <strong>Especialista recomendado:</strong> {{ resultado.especialista
-            }}
-          </p>
-
-          <label for="correcao">A previsão está errada? Corrija abaixo:</label>
-          <input
-            type="text"
-            id="correcao"
-            name="correcao"
-            placeholder="Digite a doença correta (opcional)"
-          />
-        </div>
-        {% endif %}
-      </form>
-
-      <div id="alerta"></div>
-    </div>
-
-    <script>
-      function handleEnter(e) {
-        if (e.key === "Enter") {
-          e.preventDefault(); // Evita envio duplo do formulário
-
-          // Primeiro envia o formulário
-          e.target.form.submit();
-
-          // Depois chama re-treinamento com pequeno delay
-          setTimeout(() => {
-            fetch("/retrain", { method: "POST" })
-              .then((res) => res.json())
-              .then((data) => {
-                const alerta = document.getElementById("alerta");
-                if (!alerta) return;
-                if (data.status === "ok") {
-                  alerta.innerHTML = `<div class="alerta sucesso">${data.mensagem}</div>`;
-                } else {
-                  alerta.innerHTML = `<div class="alerta erro">${
-                    data.mensagem
-                  }<br><small>${data.detalhes || ""}</small></div>`;
-                }
-              })
-              .catch((err) => {
-                const alerta = document.getElementById("alerta");
-                if (alerta)
-                  alerta.innerHTML = `<div class="alerta erro">Erro ao re-treinar: ${err.message}</div>`;
-              });
-          }, 1000);
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            color: #003366;
+            margin: 0;
+            padding: 0;
+            text-align: center;
         }
-      }
-    </script>
-  </body>
+
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 15px;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 51, 102, 0.5);
+        }
+
+        main {
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: calc(100vh - 120px);
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 160px;
+            height: auto;
+        }
+
+        .input-container {
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            resize: none;
+            background-color: #e6f2ff;
+            color: #003366;
+            outline: none;
+            box-shadow: 0 0 6px rgba(0, 51, 102, 0.5);
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #003366, #0077cc);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #002244, #0055aa);
+            transform: scale(1.05);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            box-shadow: 0 0 6px rgba(0, 51, 102, 0.5);
+            text-align: left;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        footer {
+            background-color: #003366;
+            padding: 15px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .contact {
+            color: #ffffff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <p>HealthAI – Inteligência Artificial de Triagem Médica</p>
+    </header>
+
+    <main>
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="HealthAI Logo">
+        </div>
+
+        <form method="POST" class="input-container">
+            <label for="symptoms">Descreva seus sintomas:</label>
+            <textarea id="symptoms" name="sintomas" placeholder="Digite seus sintomas aqui...">{{ sintomas or '' }}</textarea>
+            <button type="submit">Analisar</button>
+
+            {% if resultado %}
+            <div class="result-container">
+                <h2>Resultado da Triagem:</h2>
+                <p><strong>Sintomas informados:</strong> {{ resultado.sintomas }}</p>
+                <p><strong>Possível doença:</strong> {{ resultado.doenca_pt }}</p>
+                <p><strong>Especialista recomendado:</strong> {{ resultado.especialista }}</p>
+
+                <label for="correcao">Digite a doença correta (opcional):</label>
+                <textarea id="correcao" name="correcao" placeholder="Digite a doença correta aqui..."></textarea>
+                <button type="submit">Enviar sugestão</button>
+            </div>
+            {% endif %}
+        </form>
+    </main>
+
+    <footer>
+        <p class="contact">Contato: contato@healthai.com</p>
+    </footer>
+
+</body>
 </html>
