@@ -98,5 +98,100 @@
     "doenca": "cancer-de-prostata",
     "especialista": "urologista",
     "sintomas": ["dificuldade-para-urinar", "jato-urinario-fraco-ou-interrompido", "urinar-com-frequencia-especialmente-a-noite", "presenca-de-sangue-na-urina-ou-no-semen"]
+  },
+  {
+        "doenca": "alzheimer",
+        "especialista": "neurologista",
+        "sintomas": ["perda-de-memoria", "confusao-mental", "dificuldade-em-tarefas", "mudancas-de-humor", "comportamento-inadequado"]
+    },
+    {
+        "doenca": "dpoc",
+        "especialista": "pneumologista",
+        "sintomas": ["tosse-cronica", "producao-de-muco", "falta-de-ar", "chiado-no-peito"]
+    },
+    {
+        "doenca": "doenca-renal-cronica",
+        "especialista": "nefrologista",
+        "sintomas": ["fadiga", "inchaco", "alteracoes-na-urina", "nauseas", "confusao-mental"]
+    },
+    {
+        "doenca": "cancer-de-mama",
+        "especialista": "oncologista",
+        "sintomas": ["nodulo-na-mama", "alteracao-no-formato-da-mama", "secrecao-no-mamilo", "pele-com-casca-de-laranja"]
+    },
+    {
+        "doenca": "cancer-de-pulmao",
+        "especialista": "oncologista",
+        "sintomas": ["tosse-persistente", "dor-no-peito", "perda-de-peso", "falta-de-ar", "rouquidao"]
+    },
+    {
+        "doenca": "cancer-de-colo-do-utero",
+        "especialista": "ginecologista",
+        "sintomas": ["sangramento-vaginal-anormal", "dor-pelvica", "dor-na-relacao", "secrecao-vaginal-incomum"]
+    },
+    {
+        "doenca": "cancer-de-pele",
+        "especialista": "dermatologista",
+        "sintomas": ["manchas-na-pele", "feridas-que-nao-cicatrizam", "alteracao-em-pintas", "lesoes-com-bordas-irregulares"]
+    },
+    {
+        "doenca": "cancer-de-estomago",
+        "especialista": "gastroenterologista",
+        "sintomas": ["dor-abdominal", "perda-de-apetite", "nauseas", "perda-de-peso", "sensacao-de-estomago-cheio"]
+    },
+    {
+        "doenca": "cancer-colorretal",
+        "especialista": "gastroenterologista",
+        "sintomas": ["sangue-nas-fezes", "dor-abdominal", "perda-de-peso", "alteracoes-no-habito-intestinal"]
+    },
+     {
+    "doenca": "artrose-no-joelho",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-no-joelho", "rigidez", "incomodidade-ao-andar", "inchaco", "estalos-no-joelho"]
+  },
+  {
+    "doenca": "bursite-no-joelho",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-no-joelho", "inchaco-localizado", "vermelhidao", "dificuldade-de-flexao", "sensibilidade-ao-toque"]
+  },
+  {
+    "doenca": "tendinite-patelar",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-na-parte-frontal-do-joelho", "sensibilidade-abaixo-da-patela", "rigidez", "inchaco", "dificuldade-para-correr-ou-agachar"]
+  },
+  {
+    "doenca": "condromalacia-patelar",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-na-parte-anterior-do-joelho", "estalos-ao-dobrar-o-joelho", "sensacao-de-desgaste", "dor-ao-subir-escadas", "rigidez"]
+  },
+  {
+    "doenca": "lesao-do-ligamento-cruzado-anterior",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-aguda-no-joelho", "inchaco-imediato", "instabilidade-no-joelho", "dificuldade-de-apoiar-a-perna", "sensacao-de-estalo"]
+  },
+  {
+    "doenca": "lesao-do-menisco",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-no-joelho", "inchaco", "travamento-da-articulacao", "sensacao-de-estalo", "rigidez"]
+  },
+  {
+    "doenca": "gota-no-joelho",
+    "especialista": "reumatologista",
+    "sintomas": ["dor-intensa-no-joelho", "vermelhidao", "inchaco", "aumento-da-temperatura-local", "mobilidade-reduzida"]
+  },
+  {
+    "doenca": "artrite-reumatoide-no-joelho",
+    "especialista": "reumatologista",
+    "sintomas": ["dor-cronica-no-joelho", "rigidez-matinal", "inchaco", "calor-local", "fadiga"]
+  },
+  {
+    "doenca": "cisto-de-baker",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-na-parte-de-tras-do-joelho", "caroco-visivel", "rigidez", "inchaco", "sensacao-de-pressao"]
+  },
+  {
+    "doenca": "osteocondrite-dissecante",
+    "especialista": "ortopedista",
+    "sintomas": ["dor-no-joelho", "sensacao-de-corpo-solto", "travamento", "inchaco", "dificuldade-de-movimento"]
   }
 ]
